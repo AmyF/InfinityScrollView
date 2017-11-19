@@ -12,6 +12,8 @@ import Kingfisher
 
 protocol AFInfinityScrollViewDelegate: class {
     func af(infinityView: AFInfinityScrollView, didSelectItemAt index: Int)
+    
+    func af(infinityView: AFInfinityScrollView, scrollTo index: Int)
 }
 
 class AFInfinityScrollView: UIView {
@@ -27,7 +29,7 @@ class AFInfinityScrollView: UIView {
     }()
     fileprivate let identifier = "AFInfinityCell"
     
-    var scrollDirection: UICollectionViewScrollDirection = .horizontal {
+    open var scrollDirection: UICollectionViewScrollDirection = .horizontal {
         didSet {
             if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                 layout.scrollDirection = scrollDirection
@@ -36,15 +38,21 @@ class AFInfinityScrollView: UIView {
         }
     }
     
-    var placeholderImage: UIImage?
-    
-    var imageURLs: [URL] = [] {
+    open override var contentMode: UIViewContentMode {
         didSet {
-            collectionView.reloadData()
+            self.collectionView.reloadData()
         }
     }
     
-    weak var delegate: AFInfinityScrollViewDelegate?
+    open var placeholderImage: UIImage?
+    
+    open var imageURLs: [URL] = [] {
+        didSet {
+            self.collectionView.reloadData()
+        }
+    }
+    
+    open weak var delegate: AFInfinityScrollViewDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -56,7 +64,7 @@ class AFInfinityScrollView: UIView {
         self.setupUI()
     }
     
-    func setupUI() {
+    fileprivate func setupUI() {
         self.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.edges.equalTo(UIEdgeInsets.zero)
@@ -84,7 +92,7 @@ extension AFInfinityScrollView: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! AFInfinityCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! AFInfinityCell
         
         if imageURLs.count > 0 {
             var index = indexPath.item
@@ -120,8 +128,65 @@ extension AFInfinityScrollView: UICollectionViewDelegate, UICollectionViewDataSo
 }
 
 extension AFInfinityScrollView: UIScrollViewDelegate {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        self.callbackDidScroll()
+    }
+    
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        self.callbackDidScroll()
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        self.callbackDidScroll()
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
+        let count = collectionView.numberOfItems(inSection: 0)
+        if scrollDirection == .horizontal {
+            var offsetX = collectionView.contentOffset.x
+            if count >= 3 {
+                if offsetX >= self.frame.width * CGFloat(count - 1) {
+                    offsetX = self.frame.width
+                    collectionView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: false)
+                }
+                else if offsetX <= 0 {
+                    offsetX = self.frame.width * CGFloat(count - 2)
+                    collectionView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: false)
+                }
+            }
+        }
+        else {
+            var offsetY = collectionView.contentOffset.y
+            if count >= 3 {
+                if offsetY >= self.frame.height * CGFloat(count - 1) {
+                    offsetY = self.frame.height
+                    collectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+                }
+                else if offsetY <= 0 {
+                    offsetY = self.frame.height * CGFloat(count - 2)
+                    collectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+                }
+            }
+        }
+    }
+    
+    fileprivate func callbackDidScroll() {
+        assert(self.frame.height > 0, "不能作为除数")
+        assert(self.frame.width > 0, "不能作为除数")
+        
+        var index = 0
+        switch scrollDirection {
+        case .horizontal:
+            index = Int(collectionView.contentOffset.x / self.frame.width)
+        case .vertical:
+            index = Int(collectionView.contentOffset.y / self.frame.height)
+        }
+        
+        index = index < 0 ? imageURLs.count - 1 : index
+        index = index >= imageURLs.count ? 0 : index
+        
+        self.delegate?.af(infinityView: self, scrollTo: index)
     }
 }
 
@@ -139,14 +204,15 @@ class AFInfinityCell: UICollectionViewCell {
         super.init(coder: aDecoder)
     }
     
-    func setupUI() {
+    fileprivate func setupUI() {
         self.contentView.addSubview(imageView)
         imageView.snp.makeConstraints { make in
             make.edges.equalTo(UIEdgeInsets.zero)
         }
     }
     
-    func configure(url: URL?, placeholder: UIImage?) {
+    func configure(url: URL?, placeholder: UIImage?, contentMode: UIViewContentMode = .scaleAspectFill) {
+        imageView.contentMode = contentMode
         imageView.kf.setImage(with: url, placeholder: placeholder)
     }
 }
