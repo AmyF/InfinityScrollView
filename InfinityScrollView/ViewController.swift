@@ -40,11 +40,18 @@ class ViewController: UIViewController, AFInfinityScrollViewDelegate {
         imageBrowseView1.delegate = self
         imageBrowseView1.backgroundColor = .red
         
+//        imageBrowseView2.imageURLs = [
+//            "https://i.pximg.net/c/600x600/img-master/img/2017/11/05/00/25/26/65752703_p0_master1200.jpg",
+//            "https://i.pximg.net/c/600x600/img-master/img/2017/11/05/00/03/52/65752188_p0_master1200.jpg",
+//            "https://i.pximg.net/c/600x600/img-master/img/2017/10/27/20/36/47/65617348_p0_master1200.jpg",
+//            "https://i.pximg.net/c/600x600/img-master/img/2017/11/06/00/05/09/65770218_p0_master1200.jpg"
+//            ].flatMap { URL(string: $0) }
         imageBrowseView2.imageURLs = [
-            "https://i.pximg.net/c/600x600/img-master/img/2017/11/05/00/25/26/65752703_p0_master1200.jpg",
-            "https://i.pximg.net/c/600x600/img-master/img/2017/11/05/00/03/52/65752188_p0_master1200.jpg",
-            "https://i.pximg.net/c/600x600/img-master/img/2017/10/27/20/36/47/65617348_p0_master1200.jpg",
-            "https://i.pximg.net/c/600x600/img-master/img/2017/11/06/00/05/09/65770218_p0_master1200.jpg"
+            "https://pic4.zhimg.com/v2-aefb8e92fd65bcdaaf70bcbeec85747b_b.jpg",
+            "https://pic4.zhimg.com/v2-501b8573174cc2a30790840ae7382927_b.jpg",
+            "https://pic3.zhimg.com/v2-d2058c14b76d7ff0a9b78c30a556c25a_b.jpg",
+            "https://pic4.zhimg.com/v2-6af2a92488fff02595f9420585c7a8df_b.jpg",
+            "https://pic4.zhimg.com/v2-f03eef00980495955abc097a0da25ca7_b.jpg"
             ].flatMap { URL(string: $0) }
         imageBrowseView2.delegate = self
         imageBrowseView2.backgroundColor = .green

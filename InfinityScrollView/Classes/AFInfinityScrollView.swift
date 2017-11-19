@@ -160,11 +160,11 @@ extension AFInfinityScrollView: UIScrollViewDelegate {
             if count >= 3 {
                 if offsetX >= self.frame.width * CGFloat(count - 1) {
                     offsetX = self.frame.width
-                    collectionView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: false)
+                    collectionView.contentOffset = CGPoint(x: offsetX, y: 0)
                 }
                 else if offsetX <= 0 {
                     offsetX = self.frame.width * CGFloat(count - 2)
-                    collectionView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: false)
+                    collectionView.contentOffset = CGPoint(x: offsetX, y: 0)
                 }
             }
         }
@@ -173,11 +173,11 @@ extension AFInfinityScrollView: UIScrollViewDelegate {
             if count >= 3 {
                 if offsetY >= self.frame.height * CGFloat(count - 1) {
                     offsetY = self.frame.height
-                    collectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+                    collectionView.contentOffset = CGPoint(x: 0, y: offsetY)
                 }
                 else if offsetY <= 0 {
                     offsetY = self.frame.height * CGFloat(count - 2)
-                    collectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+                    collectionView.contentOffset = CGPoint(x: 0, y: offsetY)
                 }
             }
         }
