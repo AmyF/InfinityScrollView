@@ -22,6 +22,10 @@ class AFInfinityScrollView: UIView {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = self.scrollDirection
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.isPagingEnabled = true
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsHorizontalScrollIndicator = false
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(AFInfinityCell.self, forCellWithReuseIdentifier: identifier)
@@ -112,6 +116,14 @@ extension AFInfinityScrollView: UICollectionViewDelegate, UICollectionViewDataSo
         return self.bounds.size
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if imageURLs.count > 0 {
             var index = indexPath.item
@@ -198,13 +210,17 @@ class AFInfinityCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.setupUI()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        self.setupUI()
     }
     
     fileprivate func setupUI() {
+        self.contentView.clipsToBounds = true
+        
         self.contentView.addSubview(imageView)
         imageView.snp.makeConstraints { make in
             make.edges.equalTo(UIEdgeInsets.zero)
